@@ -1,8 +1,9 @@
 import React from 'react';
 import Navbar from './components/ui/Navbar';
 import Hero from './components/sections/Hero';
-// 1. Importamos el About
 import About from './components/sections/About';
+// 1. Importamos Projects
+import Projects from './components/sections/Projects';
 
 function App() {
   return (
@@ -11,9 +12,10 @@ function App() {
       
       <main>
         <Hero />
-        {/* 2. Añadimos el componente About debajo del Hero */}
         <About />
-        {/* Próximamente: Projects */}
+        {/* 2. Añadimos Projects aquí */}
+        <Projects />
+        {/* Próximamente: Contact */}
       </main>
       
     </div>
