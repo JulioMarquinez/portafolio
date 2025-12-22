@@ -1,56 +1,58 @@
 import React, { useState, useEffect } from 'react';
+// Importamos el Router y las Rutas
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+// Importamos componentes base
 import Navbar from './components/ui/Navbar';
-import Hero from './components/sections/Hero';
-import About from './components/sections/About';
-import Projects from './components/sections/Projects';
-import Contact from './components/sections/Contact';
 import Footer from './components/ui/Footer';
 
+// Importamos las nuevas páginas que creamos
+import HomePage from './pages/HomePage';
+import WorkPage from './pages/WorkPage';
+
 function App() {
-  // CORRECCIÓN AQUÍ:
-  // En lugar de iniciar siempre en 'true', verificamos si hay algo guardado en el navegador.
+  // Lógica del modo oscuro (sin cambios)
   const [darkMode, setDarkMode] = useState(() => {
-    // 1. Buscamos si hay una preferencia guardada
     const savedTheme = localStorage.getItem('theme');
-    
-    // 2. Si existe, la usamos (convertimos el string a booleano)
     if (savedTheme) {
       return savedTheme === 'dark';
     }
-    
-    // 3. Si no hay nada guardado (primera vez), por defecto es OSCURO (true)
     return true;
   });
 
-  // Efecto para aplicar la clase y GUARDAR la preferencia
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark'); // Guardamos 'dark' en memoria
+      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light'); // Guardamos 'light' en memoria
+      localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
 
-  // Función para alternar modo
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-white' : 'bg-slate-200 text-slate-900'}`}>
-      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      
-      <main>
-        <Hero />
-        <About />
-        <Projects />
-        <Contact />
-      </main>
-      
-      <Footer />
-    </div>
+    <Router>
+      <div className={`min-h-screen font-sans transition-colors duration-300 flex flex-col ${darkMode ? 'bg-gray-900 text-white' : 'bg-slate-200 text-slate-900'}`}>
+        
+        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        
+        <main className="flex-grow">
+          <Routes>
+            {/* RUTA 1: Inicio + Sobre Mí */}
+            <Route path="/" element={<HomePage />} />
+            
+            {/* RUTA 2: Proyectos + Contacto */}
+            <Route path="/proyectos" element={<WorkPage />} />
+          </Routes>
+        </main>
+        
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

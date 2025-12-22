@@ -1,92 +1,96 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+// Usamos HashLink para navegar Y deslizar
+import { HashLink } from 'react-router-hash-link';
 
-const Navbar = () => {
+const Navbar = ({ darkMode, toggleDarkMode }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    // Check local storage for user's preference
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      return savedTheme === 'dark';
-    }
-    return false;
-  });
 
-  // Update the theme when darkMode changes
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  // Configuración del scroll suave
+  const scrollWithOffset = (el) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80; // Compensar la altura del Navbar fijo
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' }); 
   };
 
+  // Enlaces de navegación
   const navLinks = [
-    { name: 'Inicio', href: '#home' },
-    { name: 'Sobre mí', href: '#about' },
-    { name: 'Proyectos', href: '#projects' },
-    { name: 'Contacto', href: '#contact' },
+    { name: 'Inicio', to: '/#home' },
+    { name: 'Sobre mí', to: '/#about' },
+    { name: 'Proyectos', to: '/proyectos#projects' },
+    { name: 'Contacto', to: '/proyectos#contact' },
   ];
 
   return (
-    <nav className="fixed w-full bg-white dark:bg-gray-900 shadow-md z-50 transition-colors duration-300">
+    <nav className="fixed w-full z-50 bg-slate-200/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-slate-300 dark:border-gray-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          {/* Logo o Nombre */}
-          <div className="flex-shrink-0 flex items-center">
-            <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">MiPortafolio</span>
+        <div className="flex items-center justify-between h-16">
+          
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <HashLink smooth to="/#home" className="font-mono text-lg md:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <span className="text-emerald-600 dark:text-emerald-400">public class</span>
+              <span>Portafolio</span>
+              <span className="text-slate-500 dark:text-gray-400">{`{ }`}</span>
+            </HashLink>
           </div>
 
-          {/* Menu para Escritorio */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+          {/* Desktop Menu */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              {navLinks.map((link) => (
+                <HashLink
+                  key={link.name}
+                  smooth
+                  to={link.to}
+                  scroll={scrollWithOffset}
+                  className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-300 dark:hover:bg-gray-800 transition-all"
+                >
+                  {link.name}
+                </HashLink>
+              ))}
+              
+              {/* Botón Dark Mode */}
+              <button
+                onClick={toggleDarkMode}
+                className="ml-4 p-2 rounded-lg bg-slate-300 dark:bg-gray-800 text-slate-800 dark:text-yellow-400 hover:bg-slate-400 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Toggle Dark Mode"
               >
-                {link.name}
-              </a>
-            ))}
-
-            {/* Dark Mode Toggle Button */}
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {darkMode ? (
-                // Sun icon (for dark mode)
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                // Moon icon (for light mode)
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-              )}
-            </button>
+                {darkMode ? (
+                  // Icono Sol (para pasar a claro)
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+                ) : (
+                  // Icono Luna (para pasar a oscuro)
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Botón de Menú para Móvil */}
+          {/* Mobile Menu Button (Hamburger) */}
           <div className="md:hidden flex items-center">
+             <button
+                onClick={toggleDarkMode}
+                className="mr-4 p-2 rounded-lg bg-slate-300 dark:bg-gray-800 text-slate-800 dark:text-yellow-400"
+              >
+                 {darkMode ? '☀️' : '🌙'}
+              </button>
+
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 dark:text-gray-400 hover:text-white hover:bg-slate-400 dark:hover:bg-gray-700 focus:outline-none"
             >
-              {isOpen ? (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <span className="sr-only">Open main menu</span>
+              {!isOpen ? (
+                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               ) : (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               )}
             </button>
@@ -94,42 +98,25 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Menú Móvil */}
-      <div className={`md:hidden ${isOpen ? 'block' : 'hidden'}`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 transition-colors duration-300">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setIsOpen(false)}
-            >
-              {link.name}
-            </a>
-          ))}
-          {/* Mobile Dark Mode Toggle */}
-          <button
-            onClick={toggleDarkMode}
-            className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center"
-          >
-            {darkMode ? (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-                Modo Claro
-              </>
-            ) : (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-                Modo Oscuro
-              </>
-            )}
-          </button>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-slate-200 dark:bg-gray-900 border-b border-slate-300 dark:border-gray-800">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {navLinks.map((link) => (
+              <HashLink
+                key={link.name}
+                smooth
+                to={link.to}
+                scroll={scrollWithOffset}
+                onClick={() => setIsOpen(false)} // Cierra el menú al hacer click
+                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-gray-300 hover:text-white hover:bg-emerald-600 dark:hover:bg-gray-700"
+              >
+                {link.name}
+              </HashLink>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 };
